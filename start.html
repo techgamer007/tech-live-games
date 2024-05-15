@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Start Page</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(45deg, #121212, #1e1e1e, #121212);
+            background-size: 600% 600%;
+            animation: gradientBackground 15s ease infinite;
+            overflow: hidden;
+            position: relative;
+            color: #fff;
+        }
+
+        @keyframes gradientBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .grid {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300px;
+            height: 300px;
+            transform: translate(-50%, -50%);
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 5px;
+            opacity: 0.2;
+        }
+
+        .cell {
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.3);
+            animation: cellGlow 2s infinite;
+        }
+
+        @keyframes cellGlow {
+            0% { box-shadow: 0 0 5px #007bff, 0 0 10px #007bff, 0 0 20px #007bff, 0 0 30px #007bff; }
+            50% { box-shadow: 0 0 20px #007bff, 0 0 30px #007bff, 0 0 40px #007bff, 0 0 50px #007bff; }
+            100% { box-shadow: 0 0 5px #007bff, 0 0 10px #007bff, 0 0 20px #007bff, 0 0 30px #007bff; }
+        }
+
+        .container {
+            text-align: center;
+            z-index: 1;
+            opacity: 0;
+            animation: fadeIn 1s forwards 4s; /* Delaying the start of the animation */
+        }
+
+        .title {
+            font-size: 2em;
+            margin-bottom: 20px;
+            animation: slideInFromTop 1s forwards 2s; /* Delaying the start of the animation */
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .button {
+            padding: 15px 30px;
+            font-size: 1em;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1s forwards 2s; /* Delaying the start of the animation */
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .button:nth-child(1) {
+            animation-delay: 1s;
+        }
+
+        .button:nth-child(2) {
+            animation-delay: 1.2s;
+        }
+
+        .button:hover {
+            transform: translateY(0) scale(1.05);
+            box-shadow: 0 4px 20px rgba(0, 123, 255, 0.6);
+            background-color: #0056b3;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInFromTop {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid">
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+    </div>
+    <div class="container">
+        <div class="title">Choose Your Game Mode</div>
+        <div class="buttons">
+            <a href="http://127.0.0.1:5500/teic%20tac%20toe.html" class="button">Play with Friend</a>
+            <a href="http://127.0.0.1:5500/tic%20tac%20toe%20ai.html" class="button">Play with Bot</a>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cells = document.querySelectorAll('.cell');
+            const symbols = ['X', 'O'];
+            let index = 0;
+
+            function animateCells() {
+                cells.forEach((cell, i) => {
+                    setTimeout(() => {
+                        cell.textContent = symbols[index % 2];
+                        cell.style.opacity = 0.6;
+                        index++;
+                        if (index % 2 === 0) {
+                            setTimeout(() => {
+                                cell.style.opacity = 0;
+                                cell.textContent = '';
+                            }, 2); // Increased duration here
+                        }
+                    }, i * 100); // Increased delay here
+                });
+
+                index++;
+                if (index < 9) {
+                    setTimeout(animateCells, 360); // Increased delay for each cycle
+                } else {
+                    index = 0;
+                    setTimeout(animateCells, 4); // Delay before restarting
+                }
+            }
+
+            animateCells();
+        });
+    </script>
+</body>
+</html>

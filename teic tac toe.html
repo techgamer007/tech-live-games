@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tic Tac Toe</title>
+<style>
+  body {
+    background-color: #0d1117;
+    color: #c9d1d9;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  .board {
+    border-collapse: collapse;
+    border: 4px solid #21262d;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  }
+  .board td {
+    width: 100px;
+    height: 100px;
+    border: 2px solid #21262d;
+    text-align: center;
+    font-size: 36px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .board td:hover {
+    background-color: #161b22;
+  }
+  .player-turn {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  .winner {
+    animation: winnerAnimation 0.5s ease-in-out forwards;
+  }
+  @keyframes winnerAnimation {
+    0% {
+      background-color: #ffd33d;
+      transform: scale(1);
+    }
+    50% {
+      background-color: #ffe066;
+      transform: scale(1.1);
+    }
+    100% {
+      background-color: #ffd33d;
+      transform: scale(1);
+    }
+  }
+  .error-container {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ff6e67;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="player-turn">Player X's Turn</div>
+
+<div class="container">
+  <table class="board">
+    <tr>
+      <td onclick="cellClicked(0, 0)"></td>
+      <td onclick="cellClicked(0, 1)"></td>
+      <td onclick="cellClicked(0, 2)"></td>
+    </tr>
+    <tr>
+      <td onclick="cellClicked(1, 0)"></td>
+      <td onclick="cellClicked(1, 1)"></td>
+      <td onclick="cellClicked(1, 2)"></td>
+    </tr>
+    <tr>
+      <td onclick="cellClicked(2, 0)"></td>
+      <td onclick="cellClicked(2, 1)"></td>
+      <td onclick="cellClicked(2, 2)"></td>
+    </tr>
+  </table>
+</div>
+
+<div class="error-container" id="error-container"></div>
+
+<script>
+  let board = [
+    ["", "", ""],
+    ["", "", ""],
+    ["", "", ""]
+  ];
+
+  let currentPlayer = "X";
+  let playerTurnDisplay = document.querySelector(".player-turn");
+  let gameWon = false;
+
+  function cellClicked(row, col) {
+    if (!gameWon && board[row][col] === "") {
+      board[row][col] = currentPlayer;
+      document.getElementsByTagName("td")[row * 3 + col].innerText = currentPlayer;
+      if (checkWinner(currentPlayer)) {
+        gameWon = true;
+        highlightWinner();
+        setTimeout(() => {
+          showAlert("Player " + currentPlayer + " wins!");
+          resetBoard();
+        }, 1000);
+      } else if (isBoardFull()) {
+        showAlert("It's a tie!");
+        resetBoard();
+      } else {
+        currentPlayer = currentPlayer === "X" ? "O" : "X";
+        playerTurnDisplay.innerText = "Player " + currentPlayer + "'s Turn";
+      }
+    }
+  }
+
+  function checkWinner(player) {
+    // Check rows and columns
+    for (let i = 0; i < 3; i++) {
+      if ((board[i][0] === player && board[i][1] === player && board[i][2] === player) ||
+          (board[0][i] === player && board[1][i] === player && board[2][i] === player)) {
+        return true;
+      }
+    }
+    // Check diagonals
+    if ((board[0][0] === player && board[1][1] === player && board[2][2] === player) ||
+        (board[0][2] === player && board[1][1] === player && board[2][0] === player)) {
+      return true;
+    }
+    return false;
+  }
+
+  function isBoardFull() {
+    for (let row of board) {
+      for (let cell of row) {
+        if (cell === "") {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  function highlightWinner() {
+    let winningCells = [];
+    // Check rows
+    for (let i = 0; i < 3; i++) {
+      if (board[i][0] === currentPlayer && board[i][1] === currentPlayer && board[i][2] === currentPlayer) {
+        winningCells.push([i, 0], [i, 1], [i, 2]);
+      }
+    }
+    // Check columns
+    for (let i = 0; i < 3; i++) {
+      if (board[0][i] === currentPlayer && board[1][i] === currentPlayer && board[2][i] === currentPlayer) {
+        winningCells.push([0, i], [1, i], [2, i]);
+      }
+    }
+    // Check diagonals
+    if (board[0][0] === currentPlayer && board[1][1] === currentPlayer && board[2][2] === currentPlayer) {
+      winningCells.push([0, 0], [1, 1], [2, 2]);
+    }
+    if (board[0][2] === currentPlayer && board[1][1] === currentPlayer && board[2][0] === currentPlayer) {
+      winningCells.push([0, 2], [1, 1], [2, 0]);
+    }
+    // Highlight winning cells with animation
+    for (let [row, col] of winningCells) {
+      let cell = document.getElementsByTagName("td")[row * 3 + col];
+      cell.classList.add("winner");
+      cell.style.animationDelay = (winningCells.indexOf([row, col]) * 0.1) + "s";
+    }
+  }
+
+  function resetBoard() {
+    board = [
+      ["", "", ""],
+      ["", "", ""],
+      ["","", ""]
+      ];
+      currentPlayer = "X";
+      gameWon = false;
+      playerTurnDisplay.innerText = "Player " + currentPlayer + "'s Turn";
+      for (let cell of document.getElementsByTagName("td")) {
+        cell.innerText = "";
+        cell.classList.remove("winner");
+        cell.style.animationDelay = "0s";
+      }
+    }
+  
+    function showAlert(message) {
+      let errorContainer = document.getElementById("error-container");
+      errorContainer.innerText = message;
+      errorContainer.style.display = "block";
+      setTimeout(() => {
+        errorContainer.style.display = "none";
+      }, 3000);
+    }
+  </script>
+  
+  </body>
+  </html>
+  
